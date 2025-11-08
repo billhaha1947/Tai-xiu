@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Chế độ ẩn</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { text-align: center; padding-top: 50px; }
+    select, input { padding: 10px; border-radius: 8px; margin: 10px; }
+  </style>
+</head>
+<body>
+  <h2>🔒 Trang cài đặt ẩn</h2>
+  <input type="password" id="adminPass" placeholder="Nhập mật khẩu quản trị">
+  <button onclick="checkPass()">Xác nhận</button>
+
+  <div id="configPanel" style="display:none;">
+    <h3>🎮 Chọn chế độ kết quả:</h3>
+    <select id="modeSelect">
+      <option value="random">🎲 Random bình thường</option>
+      <option value="taiHigh">💥 Tỉ lệ Tài cao hơn</option>
+      <option value="xiuHigh">💧 Tỉ lệ Xỉu cao hơn</option>
+      <option value="allTai">🔥 Toàn Tài</option>
+      <option value="allXiu">❄️ Toàn Xỉu</option>
+    </select>
+    <br>
+    <button onclick="saveMode()">Lưu chế độ</button>
+    <p id="status"></p>
+  </div>
+
+  <script>
+    const ADMIN_PASSWORD = "123456"; // 🔑 m đổi mật khẩu ở đây
+
+    function checkPass(){
+      const pass = document.getElementById('adminPass').value;
+      if(pass === ADMIN_PASSWORD){
+        document.getElementById('configPanel').style.display = 'block';
+        document.getElementById('adminPass').style.display = 'none';
+        event.target.style.display = 'none';
+      } else {
+        alert("Sai mật khẩu!");
+      }
+    }
+
+    function saveMode(){
+      const mode = document.getElementById('modeSelect').value;
+      localStorage.setItem('gameMode', mode);
+      document.getElementById('status').textContent = "✅ Đã lưu chế độ: " + mode;
+    }
+  </script>
+</body>
+</html>
