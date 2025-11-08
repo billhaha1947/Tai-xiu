@@ -1,38 +1,100 @@
-function randomDice() {
-  return 1 + Math.floor(Math.random() * 6);
+const DEFAULT_BALANCE = 1000;
+
+// --- Quản lý user ---
+function getUsers(){ return JSON.parse(localStorage.getItem('users') || '[]'); }
+function saveUsers(users){ localStorage.setItem('users', JSON.stringify(users)); }
+
+const currentUser = localStorage.getItem('currentUser');
+if(!currentUser){ location.href = 'login.html'; }
+
+let users = getUsers();
+let user = users.find(x => x.username === currentUser);
+if(!user){
+  alert("User không tồn tại, vui lòng đăng nhập lại!");
+  localStorage.removeItem('currentUser');
+  location.href = 'login.html';
 }
 
+let balance = user.balance;
+const balanceEl = document.getElementById('balance');
+document.getElementById('usernameDisplay').textContent = user.username;
+renderBalance();
+
+document.getElementById('logoutBtn').onclick = ()=>{
+  localStorage.removeItem('currentUser');
+  location.href = 'login.html';
+};
+
+document.getElementById('resetBalance').onclick = ()=>{
+  balance = DEFAULT_BALANCE;
+  saveBalance();
+  renderBalance();
+};
+
+function renderBalance(){
+  balanceEl.textContent = balance + "₫";
+}
+function saveBalance(){
+  user.balance = balance;
+  saveUsers(users);
+}
+
+function emoji(num){
+  return ["⚀","⚁","⚂","⚃","⚄","⚅"][num-1];
+}
+
+document.getElementById('taiBtn').onclick = ()=>play('Tài');
+document.getElementById('xiuBtn').onclick = ()=>play('Xỉu');
+
 function play(choice) {
-  const rig = localStorage.getItem('rigMode') || 'none';
-  const diceEls = [document.getElementById('dice1'), document.getElementById('dice2'), document.getElementById('dice3')];
+  const bet = parseInt(document.getElementById('betAmount').value);
+  const mode = document.getElementById('modeSelect').value;
+  if (!bet || bet <= 0) { alert("Nhập số tiền hợp lệ!"); return; }
+  if (bet > balance) { alert("Không đủ tiền!"); return; }
 
-  // hiệu ứng xoay xúc xắc
-  diceEls.forEach(d => d.classList.add('spin'));
-  document.getElementById('result').textContent = "Đang lắc...";
-  document.getElementById('sum').textContent = "Tổng: ?";
+  const roll = () => Math.ceil(Math.random() * 6);
+  let d1, d2, d3;
 
-  setTimeout(() => {
-    diceEls.forEach(d => d.classList.remove('spin'));
+  // --- Chọn chế độ ---
+  if (mode === "allTai") {
+    do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 < 11);
+  } 
+  else if (mode === "allXiu") {
+    do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 >= 11);
+  }
+  else if (mode === "taiHigh") {
+    if (Math.random() < 0.7)
+      do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 < 11);
+    else
+      do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 >= 11);
+  }
+  else if (mode === "xiuHigh") {
+    if (Math.random() < 0.7)
+      do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 >= 11);
+    else
+      do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 < 11);
+  }
+  else { // random
+    d1 = roll(); d2 = roll(); d3 = roll();
+  }
 
-    let d1 = randomDice(), d2 = randomDice(), d3 = randomDice();
-    let sum = d1 + d2 + d3;
+  const sum = d1 + d2 + d3;
+  const resultType = sum >= 11 ? 'Tài' : 'Xỉu';
 
-    if (rig === 'tai') sum = 12 + Math.floor(Math.random() * 5);
-    if (rig === 'xiu') sum = 4 + Math.floor(Math.random() * 6);
+  document.getElementById('dice1').textContent = emoji(d1);
+  document.getElementById('dice2').textContent = emoji(d2);
+  document.getElementById('dice3').textContent = emoji(d3);
 
-    const diceEmoji = ["⚀","⚁","⚂","⚃","⚄","⚅"];
-    diceEls[0].textContent = diceEmoji[d1-1];
-    diceEls[1].textContent = diceEmoji[d2-1];
-    diceEls[2].textContent = diceEmoji[d3-1];
-
-    document.getElementById('sum').textContent = `Tổng: ${sum}`;
-
-    const result = (sum >= 11 && sum <= 17) ? 'tai' : 'xiu';
-    const text = choice === result
-      ? `✅ Bạn thắng! (${sum} → ${result.toUpperCase()})`
-      : `❌ Bạn thua! (${sum} → ${result.toUpperCase()})`;
-
-    document.getElementById('result').textContent = text;
-    document.getElementById('result').style.color = (choice === result) ? '#00ff88' : '#ff5555';
-  }, 1500);
+  const resultEl = document.getElementById('result');
+  if(resultType === choice){
+    balance += bet;
+    resultEl.textContent = `🎉 Kết quả: ${resultType}! Bạn thắng +${bet}₫`;
+    resultEl.style.color = "#00ff88";
+  } else {
+    balance -= bet;
+    resultEl.textContent = `😢 Kết quả: ${resultType}! Bạn thua -${bet}₫`;
+    resultEl.style.color = "#ff5555";
+  }
+  saveBalance();
+  renderBalance();
 }
