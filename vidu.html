@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>🎲 Tài Xỉu 🎲</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="left">
+      <h1>🎲 Game Tài Xỉu 🎲</h1>
+      <div class="buttons">
+        <button class="btn" onclick="play('tai')">Chọn Tài</button>
+        <button class="btn" onclick="play('xiu')">Chọn Xỉu</button>
+      </div>
+      <div id="result" class="result">Chưa chơi</div>
+      <a href="admin.html" class="btn small" style="margin-top:15px;">🔒 Mở Troll Mode</a>
+    </div>
+
+    <div class="right">
+      <div id="dice-area" class="dice-area">
+        <div class="dice" id="dice1">🎲</div>
+        <div class="dice" id="dice2">🎲</div>
+        <div class="dice" id="dice3">🎲</div>
+      </div>
+      <div id="sum" class="sum">Tổng: -</div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
