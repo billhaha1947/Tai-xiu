@@ -1,88 +1,102 @@
 body {
   margin: 0;
-  padding: 0;
-  font-family: 'Poppins', sans-serif;
-  background: #111;
-  color: #ffcc00;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  overflow: hidden;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #111, #333);
+  color: #fff;
+  text-align: center;
 }
 
 .container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  width: 90%;
-  max-width: 900px;
+  max-width: 500px;
+  margin: 50px auto;
   background: #222;
+  padding: 20px;
   border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
-}
-
-.container.column {
-  flex-direction: column;
-  justify-content: center;
-}
-
-.left, .right {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
+  box-shadow: 0 0 15px #000;
 }
 
 h1 {
-  color: #ffcc00;
-  margin-bottom: 20px;
-  text-shadow: 0 0 10px #ffcc00;
+  margin-top: 10px;
+  color: gold;
+  font-size: 1.8rem;
 }
 
-.buttons {
+.status-row {
   display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
+  justify-content: space-between;
+  align-items: center;
+  background: #111;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.bet-section {
+  margin-top: 20px;
+}
+
+input[type=number], select {
+  padding: 10px;
+  width: 85%;
+  border-radius: 10px;
+  border: none;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  background: #444;
+  color: #fff;
 }
 
 .btn {
-  background: #ffcc00;
-  color: #111;
+  background: gold;
   border: none;
   border-radius: 10px;
   padding: 10px 20px;
-  font-weight: bold;
+  margin: 5px;
+  font-size: 1rem;
   cursor: pointer;
-  font-size: 16px;
-  transition: 0.2s;
+  color: #000;
+  font-weight: bold;
 }
-.btn:hover { background: #ffaa00; }
-.small { padding: 6px 12px; font-size: 14px; }
-
-.result { font-size: 20px; margin: 15px 0; }
-
-.dice-area {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
+.btn:hover {
+  background: #ffdc73;
 }
+.small {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+}
+
 .dice {
-  font-size: 60px;
-  transition: transform 0.6s ease;
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
 }
-.spin { animation: roll 0.6s infinite linear; }
-@keyframes roll { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-.sum { font-size: 20px; color: #ffcc00; }
+.die {
+  font-size: 3rem;
+  margin: 0 10px;
+}
 
-input, select {
-  padding: 8px;
-  border-radius: 6px;
+#result {
+  font-size: 1.3rem;
+  color: cyan;
+}
+
+.login-container {
+  max-width: 350px;
+  margin: 100px auto;
+  background: #222;
+  padding: 24px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 0 12px #000;
+}
+.login-container input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 8px;
   border: none;
-  margin: 10px 0;
 }
+.login-btns { display: flex; gap: 10px; justify-content: center; margin-top: 8px; }
+.result { margin-top: 10px; font-weight: bold; }
