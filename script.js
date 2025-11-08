@@ -48,7 +48,7 @@ document.getElementById('xiuBtn').onclick = ()=>play('Xỉu');
 
 function play(choice) {
   const bet = parseInt(document.getElementById('betAmount').value);
-  const mode = document.getElementById('modeSelect').value;
+  const mode = localStorage.getItem('gameMode') || "random";
   if (!bet || bet <= 0) { alert("Nhập số tiền hợp lệ!"); return; }
   if (bet > balance) { alert("Không đủ tiền!"); return; }
 
