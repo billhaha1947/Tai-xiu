@@ -52,49 +52,64 @@ function play(choice) {
   if (!bet || bet <= 0) { alert("Nhập số tiền hợp lệ!"); return; }
   if (bet > balance) { alert("Không đủ tiền!"); return; }
 
-  const roll = () => Math.ceil(Math.random() * 6);
-  let d1, d2, d3;
-
-  // --- Chọn chế độ ---
-  if (mode === "allTai") {
-    do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 < 11);
-  } 
-  else if (mode === "allXiu") {
-    do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 >= 11);
-  }
-  else if (mode === "taiHigh") {
-    if (Math.random() < 0.7)
-      do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 < 11);
-    else
-      do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 >= 11);
-  }
-  else if (mode === "xiuHigh") {
-    if (Math.random() < 0.7)
-      do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 >= 11);
-    else
-      do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 < 11);
-  }
-  else { // random
-    d1 = roll(); d2 = roll(); d3 = roll();
-  }
-
-  const sum = d1 + d2 + d3;
-  const resultType = sum >= 11 ? 'Tài' : 'Xỉu';
-
-  document.getElementById('dice1').textContent = emoji(d1);
-  document.getElementById('dice2').textContent = emoji(d2);
-  document.getElementById('dice3').textContent = emoji(d3);
-
+  const diceContainer = document.querySelector('.dice');
   const resultEl = document.getElementById('result');
-  if(resultType === choice){
-    balance += bet;
-    resultEl.textContent = `🎉 Kết quả: ${resultType}! Bạn thắng +${bet}₫`;
-    resultEl.style.color = "#00ff88";
-  } else {
-    balance -= bet;
-    resultEl.textContent = `😢 Kết quả: ${resultType}! Bạn thua -${bet}₫`;
-    resultEl.style.color = "#ff5555";
-  }
-  saveBalance();
-  renderBalance();
+  const d1El = document.getElementById('dice1');
+  const d2El = document.getElementById('dice2');
+  const d3El = document.getElementById('dice3');
+
+  resultEl.textContent = "🎲 Đang lắc xúc xắc...";
+  resultEl.style.color = "#fff";
+  diceContainer.classList.add('shaking');
+
+  // Animation 1.5s rồi ra kết quả
+  setTimeout(() => {
+    diceContainer.classList.remove('shaking');
+
+    const roll = () => Math.ceil(Math.random() * 6);
+    let d1, d2, d3;
+
+    // --- Chế độ ---
+    if (mode === "allTai") {
+      do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 < 11);
+    } 
+    else if (mode === "allXiu") {
+      do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 >= 11);
+    }
+    else if (mode === "taiHigh") {
+      if (Math.random() < 0.7)
+        do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 < 11);
+      else
+        do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 >= 11);
+    }
+    else if (mode === "xiuHigh") {
+      if (Math.random() < 0.7)
+        do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 >= 11);
+      else
+        do { d1 = roll(); d2 = roll(); d3 = roll(); } while (d1 + d2 + d3 < 11);
+    }
+    else {
+      d1 = roll(); d2 = roll(); d3 = roll();
+    }
+
+    const sum = d1 + d2 + d3;
+    const resultType = sum >= 11 ? 'Tài' : 'Xỉu';
+
+    d1El.textContent = emoji(d1);
+    d2El.textContent = emoji(d2);
+    d3El.textContent = emoji(d3);
+
+    if(resultType === choice){
+      balance += bet;
+      resultEl.textContent = `🎉 Kết quả: ${resultType}! Bạn thắng +${bet}₫`;
+      resultEl.style.color = "#00ff88";
+    } else {
+      balance -= bet;
+      resultEl.textContent = `😢 Kết quả: ${resultType}! Bạn thua -${bet}₫`;
+      resultEl.style.color = "#ff5555";
+    }
+    saveBalance();
+    renderBalance();
+
+  }, 1500);
 }
