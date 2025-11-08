@@ -1,66 +1,103 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Đăng nhập Tài Xỉu</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Đăng nhập — Tài Xỉu</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="login-container">
     <h1>🎰 Tài Xỉu — Đăng nhập</h1>
-    <input id="username" type="text" placeholder="Tên đăng nhập">
-    <input id="password" type="password" placeholder="Mật khẩu">
+
+    <input id="username" type="text" placeholder="Tên đăng nhập" autocomplete="username">
+    <input id="password" type="password" placeholder="Mật khẩu" autocomplete="current-password">
+
     <div class="login-btns">
       <button id="btnLogin" class="btn">Đăng nhập</button>
       <button id="btnRegister" class="btn">Đăng ký</button>
     </div>
-    <div id="loginMsg" class="result"></div>
+
+    <div id="loginMsg" class="result" aria-live="polite"></div>
+
+    <p style="margin-top:12px;color:#aaa;font-size:13px">
+      Admin mặc định: <strong>admin</strong> / <strong>trolladmin</strong>
+    </p>
   </div>
 
-  <script>
-    const uInput = document.getElementById('username');
-    const pInput = document.getElementById('password');
-    const msg = document.getElementById('loginMsg');
+<script>
+/*
+  login.html logic:
+  - stores users in localStorage under key 'users' (array of {username,password,balance,role})
+  - ensures an admin account exists (username: admin, password: trolladmin) on first load
+  - register creates a user with role 'user' and balance default 1000
+  - login sets localStorage.currentUser to username and redirects to index.html
+*/
 
-    function getUsers(){ return JSON.parse(localStorage.getItem('users') || '[]'); }
-    function saveUsers(users){ localStorage.setItem('users', JSON.stringify(users)); }
+// helpers
+function getUsers(){ return JSON.parse(localStorage.getItem('users') || '[]'); }
+function saveUsers(users){ localStorage.setItem('users', JSON.stringify(users)); }
 
-    document.getElementById('btnLogin').onclick = ()=>{
-      const u = uInput.value.trim();
-      const p = pInput.value.trim();
-      if(!u || !p){ msg.textContent = "Nhập đủ tên và mật khẩu!"; return; }
+// ensure admin exists (runs once if no admin)
+(function ensureAdmin(){
+  const users = getUsers();
+  if(!users.some(u => u.role === 'admin')){
+    users.push({ username: 'admin', password: 'trolladmin', balance: 1000000, role: 'admin' });
+    saveUsers(users);
+    console.log('Default admin created: admin / trolladmin');
+  }
+})();
 
-      const users = getUsers();
-      const found = users.find(x => x.username === u && x.password === p);
-      if(!found){
-        msg.textContent = "Sai tài khoản hoặc mật khẩu!";
-        msg.style.color = "#ff5555";
-        return;
-      }
-      localStorage.setItem('currentUser', u);
-      msg.textContent = "Đăng nhập thành công!";
-      msg.style.color = "#00ff88";
-      setTimeout(()=> location.href = 'index.html', 700);
-    };
+const uInput = document.getElementById('username');
+const pInput = document.getElementById('password');
+const msg = document.getElementById('loginMsg');
 
-    document.getElementById('btnRegister').onclick = ()=>{
-      const u = uInput.value.trim();
-      const p = pInput.value.trim();
-      if(!u || !p){ msg.textContent = "Nhập đủ tên và mật khẩu!"; return; }
-      const users = getUsers();
-      if(users.some(x => x.username === u)){
-        msg.textContent = "Tên này đã tồn tại!";
-        msg.style.color = "#ff5555";
-        return;
-      }
-      users.push({username: u, password: p, balance: 1000});
-      saveUsers(users);
-      localStorage.setItem('currentUser', u);
-      msg.textContent = "Đăng ký thành công!";
-      msg.style.color = "#00ff88";
-      setTimeout(()=> location.href = 'index.html', 700);
-    };
-  </script>
+document.getElementById('btnLogin').addEventListener('click', () => {
+  const u = uInput.value.trim();
+  const p = pInput.value;
+  msg.style.color = '';
+  if(!u || !p){ msg.textContent = "Nhập đủ tên và mật khẩu!"; msg.style.color='#ff5555'; return; }
+
+  const users = getUsers();
+  const found = users.find(x => x.username === u && x.password === p);
+  if(!found){
+    msg.textContent = "Sai tài khoản hoặc mật khẩu!";
+    msg.style.color = "#ff5555";
+    return;
+  }
+  localStorage.setItem('currentUser', u);
+  msg.textContent = "Đăng nhập thành công — chuyển hướng...";
+  msg.style.color = "#00ff88";
+  setTimeout(()=> location.href = 'index.html', 600);
+});
+
+document.getElementById('btnRegister').addEventListener('click', () => {
+  const u = uInput.value.trim();
+  const p = pInput.value;
+  msg.style.color = '';
+  if(!u || !p){ msg.textContent = "Nhập đủ tên và mật khẩu!"; msg.style.color='#ff5555'; return; }
+
+  const users = getUsers();
+  if(users.some(x => x.username === u)){
+    msg.textContent = "Tên tài khoản đã tồn tại!";
+    msg.style.color = "#ff5555";
+    return;
+  }
+  // create normal user
+  users.push({ username: u, password: p, balance: 1000, role: 'user' });
+  saveUsers(users);
+  localStorage.setItem('currentUser', u);
+  msg.textContent = "Đăng ký thành công — chuyển hướng...";
+  msg.style.color = "#00ff88";
+  setTimeout(()=> location.href = 'index.html', 600);
+});
+
+// optional: allow Enter key to submit
+[pInput, uInput].forEach(el=>{
+  el.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter') document.getElementById('btnLogin').click();
+  });
+});
+</script>
 </body>
 </html>
