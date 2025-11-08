@@ -1,31 +1,49 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>🎲 Tài Xỉu 🎲</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tài Xỉu — Web Troll</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <div class="left">
-      <h1>🎲 Game Tài Xỉu 🎲</h1>
-      <div class="buttons">
-        <button class="btn" onclick="play('tai')">Chọn Tài</button>
-        <button class="btn" onclick="play('xiu')">Chọn Xỉu</button>
+    <div class="status-row">
+      <div class="balance-box">
+        👤 <span id="usernameDisplay"></span> — 💰 <span id="balance">0₫</span>
       </div>
-      <div id="result" class="result">Chưa chơi</div>
-      <a href="admin.html" class="btn small" style="margin-top:15px;">🔒 Mở Troll Mode</a>
+      <div class="reset-box">
+        <button class="btn small" id="logoutBtn">Đăng xuất</button>
+        <button class="btn small" id="resetBalance">Reset tiền</button>
+      </div>
     </div>
 
-    <div class="right">
-      <div id="dice-area" class="dice-area">
-        <div class="dice" id="dice1">🎲</div>
-        <div class="dice" id="dice2">🎲</div>
-        <div class="dice" id="dice3">🎲</div>
+    <h1>🎲 Game Tài Xỉu</h1>
+
+    <div class="bet-section">
+      <input type="number" id="betAmount" placeholder="Nhập số tiền cược">
+
+      <select id="modeSelect">
+        <option value="random">🎲 Random bình thường</option>
+        <option value="taiHigh">💥 Tỉ lệ Tài cao hơn</option>
+        <option value="xiuHigh">💧 Tỉ lệ Xỉu cao hơn</option>
+        <option value="allTai">🔥 Toàn Tài</option>
+        <option value="allXiu">❄️ Toàn Xỉu</option>
+      </select>
+
+      <div class="bet-buttons">
+        <button class="btn" id="taiBtn">Tài</button>
+        <button class="btn" id="xiuBtn">Xỉu</button>
       </div>
-      <div id="sum" class="sum">Tổng: -</div>
     </div>
+
+    <div class="dice">
+      <div id="dice1" class="die">🎲</div>
+      <div id="dice2" class="die">🎲</div>
+      <div id="dice3" class="die">🎲</div>
+    </div>
+
+    <h2 id="result"></h2>
   </div>
 
   <script src="script.js"></script>
