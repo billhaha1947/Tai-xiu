@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Đăng nhập Tài Xỉu</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="login-container">
+    <h1>🎰 Tài Xỉu — Đăng nhập</h1>
+    <input id="username" type="text" placeholder="Tên đăng nhập">
+    <input id="password" type="password" placeholder="Mật khẩu">
+    <div class="login-btns">
+      <button id="btnLogin" class="btn">Đăng nhập</button>
+      <button id="btnRegister" class="btn">Đăng ký</button>
+    </div>
+    <div id="loginMsg" class="result"></div>
+  </div>
+
+  <script>
+    const uInput = document.getElementById('username');
+    const pInput = document.getElementById('password');
+    const msg = document.getElementById('loginMsg');
+
+    function getUsers(){ return JSON.parse(localStorage.getItem('users') || '[]'); }
+    function saveUsers(users){ localStorage.setItem('users', JSON.stringify(users)); }
+
+    document.getElementById('btnLogin').onclick = ()=>{
+      const u = uInput.value.trim();
+      const p = pInput.value.trim();
+      if(!u || !p){ msg.textContent = "Nhập đủ tên và mật khẩu!"; return; }
+
+      const users = getUsers();
+      const found = users.find(x => x.username === u && x.password === p);
+      if(!found){
+        msg.textContent = "Sai tài khoản hoặc mật khẩu!";
+        msg.style.color = "#ff5555";
+        return;
+      }
+      localStorage.setItem('currentUser', u);
+      msg.textContent = "Đăng nhập thành công!";
+      msg.style.color = "#00ff88";
+      setTimeout(()=> location.href = 'index.html', 700);
+    };
+
+    document.getElementById('btnRegister').onclick = ()=>{
+      const u = uInput.value.trim();
+      const p = pInput.value.trim();
+      if(!u || !p){ msg.textContent = "Nhập đủ tên và mật khẩu!"; return; }
+      const users = getUsers();
+      if(users.some(x => x.username === u)){
+        msg.textContent = "Tên này đã tồn tại!";
+        msg.style.color = "#ff5555";
+        return;
+      }
+      users.push({username: u, password: p, balance: 1000});
+      saveUsers(users);
+      localStorage.setItem('currentUser', u);
+      msg.textContent = "Đăng ký thành công!";
+      msg.style.color = "#00ff88";
+      setTimeout(()=> location.href = 'index.html', 700);
+    };
+  </script>
+</body>
+</html>
