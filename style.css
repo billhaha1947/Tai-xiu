@@ -100,3 +100,15 @@ input[type=number], select {
 }
 .login-btns { display: flex; gap: 10px; justify-content: center; margin-top: 8px; }
 .result { margin-top: 10px; font-weight: bold; }
+/* --- Animation xúc xắc --- */
+@keyframes shakeDice {
+  0% { transform: rotate(0deg) translate(0, 0); }
+  25% { transform: rotate(10deg) translate(-5px, -5px); }
+  50% { transform: rotate(-10deg) translate(5px, 5px); }
+  75% { transform: rotate(10deg) translate(-5px, 5px); }
+  100% { transform: rotate(0deg) translate(0, 0); }
+}
+
+.dice.shaking .die {
+  animation: shakeDice 0.2s linear infinite;
+}
