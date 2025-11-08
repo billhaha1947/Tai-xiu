@@ -1,52 +1,165 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Chế độ ẩn</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Panel — Tài Xỉu</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    body { text-align: center; padding-top: 50px; }
-    select, input { padding: 10px; border-radius: 8px; margin: 10px; }
+    body { padding: 18px; background: linear-gradient(135deg,#0b0b0b,#222); color:#fff; }
+    .admin-box { max-width: 1000px; margin: 8px auto; background:#111; padding:14px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.6); }
+    table { width:100%; border-collapse: collapse; margin-top:12px; }
+    th, td { padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.04); text-align:left; }
+    input[type=number], input[type=text] { padding:6px; border-radius:6px; border:none; background:#222; color:#fff; }
+    .small-btn { padding:6px 8px; border-radius:6px; background:gold; border:none; cursor:pointer; font-weight:700; margin-right:6px; }
+    .danger { background:#ff7777; color:#000; }
+    .muted { color:#aaa; font-size:13px; }
   </style>
 </head>
 <body>
-  <h2>🔒 Trang cài đặt ẩn</h2>
-  <input type="password" id="adminPass" placeholder="Nhập mật khẩu quản trị">
-  <button onclick="checkPass()">Xác nhận</button>
+  <div class="admin-box">
+    <h2>🔒 Admin Panel</h2>
+    <div id="who" class="muted"></div>
+    <div id="notAuth" style="color:#ffbaba; display:none; margin-top:8px;">Bạn không có quyền truy cập trang này. Đăng nhập bằng tài khoản admin.</div>
 
-  <div id="configPanel" style="display:none;">
-    <h3>🎮 Chọn chế độ kết quả:</h3>
-    <select id="modeSelect">
-      <option value="random">🎲 Random bình thường</option>
-      <option value="taiHigh">💥 Tỉ lệ Tài cao hơn</option>
-      <option value="xiuHigh">💧 Tỉ lệ Xỉu cao hơn</option>
-      <option value="allTai">🔥 Toàn Tài</option>
-      <option value="allXiu">❄️ Toàn Xỉu</option>
-    </select>
-    <br>
-    <button onclick="saveMode()">Lưu chế độ</button>
-    <p id="status"></p>
+    <div id="panel" style="display:none; margin-top:12px;">
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <button id="refreshBtn" class="small-btn">🔄 Load lại</button>
+        <button id="createAdminBtn" class="small-btn">➕ Tạo admin mới</button>
+        <button id="logoutAdmin" class="small-btn danger">Đăng xuất Admin</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>#</th><th>Tên</th><th>Vai trò</th><th>Số dư</th><th>Hành động</th></tr>
+        </thead>
+        <tbody id="userBody"></tbody>
+      </table>
+
+      <div style="margin-top:12px">
+        <h4 class="muted">Thiết lập nhanh</h4>
+        <input id="quickUser" type="text" placeholder="username">
+        <input id="quickAmount" type="number" placeholder="Số dư mới">
+        <button id="quickSet" class="small-btn">Áp dụng</button>
+      </div>
+
+      <div style="margin-top:12px">
+        <h4 class="muted">Chế độ kết quả (chỉ admin)</h4>
+        <select id="gameModeSelect">
+          <option value="random">Random</option>
+          <option value="taiHigh">Tỉ lệ Tài cao hơn</option>
+          <option value="xiuHigh">Tỉ lệ Xỉu cao hơn</option>
+          <option value="allTai">Toàn Tài</option>
+          <option value="allXiu">Toàn Xỉu</option>
+        </select>
+        <button id="saveModeBtn" class="small-btn">Lưu chế độ</button>
+        <span id="modeStatus" class="muted"></span>
+      </div>
+    </div>
   </div>
 
-  <script>
-    const ADMIN_PASSWORD = "123456"; // 🔑 m đổi mật khẩu ở đây
+<script>
+// admin.html logic
+const current = localStorage.getItem('currentUser');
+const users = JSON.parse(localStorage.getItem('users') || '[]');
+const me = users.find(u => u.username === current);
+const who = document.getElementById('who');
 
-    function checkPass(){
-      const pass = document.getElementById('adminPass').value;
-      if(pass === ADMIN_PASSWORD){
-        document.getElementById('configPanel').style.display = 'block';
-        document.getElementById('adminPass').style.display = 'none';
-        event.target.style.display = 'none';
-      } else {
-        alert("Sai mật khẩu!");
-      }
-    }
+if(!me || me.role !== 'admin'){
+  document.getElementById('notAuth').style.display = 'block';
+  who.textContent = 'Bạn chưa đăng nhập admin.';
+} else {
+  who.textContent = 'Xin chào Admin: ' + me.username;
+  document.getElementById('panel').style.display = 'block';
+  loadUsers();
+  // init modeSelect to current saved mode
+  const mode = localStorage.getItem('gameMode') || 'random';
+  document.getElementById('gameModeSelect').value = mode;
+  document.getElementById('modeStatus').textContent = ' (đang: ' + mode + ')';
+}
 
-    function saveMode(){
-      const mode = document.getElementById('modeSelect').value;
-      localStorage.setItem('gameMode', mode);
-      document.getElementById('status').textContent = "✅ Đã lưu chế độ: " + mode;
-    }
-  </script>
+function loadUsers(){
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  const tbody = document.getElementById('userBody');
+  tbody.innerHTML = '';
+  users.forEach((u, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${idx+1}</td>
+      <td>${u.username}</td>
+      <td>${u.role || 'user'}</td>
+      <td><input type="number" id="bal-${idx}" value="${Number(u.balance||0)}"></td>
+      <td>
+        <button class="small-btn" onclick="saveBalance(${idx})">Lưu</button>
+        <button class="small-btn" onclick="adjustBalance(${idx}, -100)">-100</button>
+        <button class="small-btn" onclick="adjustBalance(${idx}, 100)">+100</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function saveBalance(idx){
+  const input = document.getElementById('bal-' + idx);
+  if(!input) return;
+  const val = Number(input.value) || 0;
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  users[idx].balance = val;
+  localStorage.setItem('users', JSON.stringify(users));
+  alert('Đã lưu số dư cho ' + users[idx].username + ': ' + val + '₫');
+  loadUsers();
+}
+
+function adjustBalance(idx, delta){
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  users[idx].balance = (Number(users[idx].balance) || 0) + delta;
+  localStorage.setItem('users', JSON.stringify(users));
+  loadUsers();
+}
+
+document.getElementById('refreshBtn').addEventListener('click', loadUsers);
+
+document.getElementById('quickSet').addEventListener('click', ()=>{
+  const u = document.getElementById('quickUser').value.trim();
+  const amt = Number(document.getElementById('quickAmount').value);
+  if(!u) { alert('Nhập username'); return; }
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  const idx = users.findIndex(x => x.username === u);
+  if(idx === -1) { alert('Không tìm thấy user'); return; }
+  users[idx].balance = amt;
+  localStorage.setItem('users', JSON.stringify(users));
+  alert('Đã đặt ' + u + ' = ' + amt + '₫');
+  loadUsers();
+});
+
+document.getElementById('createAdminBtn').addEventListener('click', ()=>{
+  const name = prompt('Tên admin mới (username):');
+  if(!name) return;
+  const pwd = prompt('Mật khẩu cho admin mới:','trolladmin');
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  if(users.some(x=>x.username===name)){ alert('Username đã tồn tại'); return; }
+  users.push({ username: name, password: pwd, balance: 1000000, role: 'admin' });
+  localStorage.setItem('users', JSON.stringify(users));
+  alert('Đã tạo admin: ' + name);
+  loadUsers();
+});
+
+document.getElementById('logoutAdmin').addEventListener('click', ()=>{
+  localStorage.removeItem('currentUser');
+  location.href = 'login.html';
+});
+
+// save mode
+document.getElementById('saveModeBtn').addEventListener('click', ()=>{
+  const mode = document.getElementById('gameModeSelect').value;
+  localStorage.setItem('gameMode', mode);
+  document.getElementById('modeStatus').textContent = ' (đang: ' + mode + ')';
+  alert('Đã lưu chế độ: ' + mode);
+});
+
+// expose saveBalance & adjustBalance for inline onclick
+window.saveBalance = saveBalance;
+window.adjustBalance = adjustBalance;
+</script>
 </body>
 </html>
