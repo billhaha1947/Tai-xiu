@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Profile — Taixiu VIP</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="bg-black text-white">
+  <div class="min-h-screen p-6">
+    <div class="neon-card p-6 max-w-2xl mx-auto">
+      <h1 class="text-2xl neon-text">Trang cá nhân</h1>
+      <div class="mt-4 flex gap-4 items-center">
+        <img id="pf-avatar" src="assets/avatar-default.png" class="w-24 h-24 rounded-full ring-glow"/>
+        <div>
+          <div id="pf-username" class="text-xl font-bold"></div>
+          <div id="pf-balance" class="text-lg neon-green"></div>
+          <div class="mt-2">
+            <input id="file-avatar" type="file" />
+            <button id="btn-upload" class="btn-neon ml-2">Upload</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <h3 class="font-bold neon-text">Đổi mật khẩu</h3>
+        <div class="mt-2 flex gap-2">
+          <input id="oldpass" placeholder="Mật khẩu cũ" type="password" class="input-neon"/>
+          <input id="newpass" placeholder="Mật khẩu mới" type="password" class="input-neon"/>
+          <button id="btn-changepw" class="btn-neon">Đổi</button>
+        </div>
+        <div id="pf-msg" class="mt-3 text-sm"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const token = localStorage.getItem('taixiu_token');
+  if(!token){ alert('Please login'); window.location='/login.html'; }
+  async function loadProfile(){
+    const r = await fetch('/auth/me', {headers:{'Authorization':'Bearer '+token}});
+    const j = await r.json();
+    const u = j.user;
+    document.getElementById('pf-username').innerText = u.username;
+    document.getElementById('pf-balance').innerText = u.balance + ' xu';
+    document.getElementById('pf-avatar').src = u.avatar || 'assets/avatar-default.png';
+  }
+  document.getElementById('btn-changepw').addEventListener('click', async ()=>{
+    const old = document.getElementById('oldpass').value;
+    const nw = document.getElementById('newpass').value;
+    const r = await fetch('/user/change_password', {method:'POST', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}, body: JSON.stringify({old,new:nw})});
+    const j = await r.json();
+    document.getElementById('pf-msg').innerText = j.ok ? 'Đổi mật khẩu thành công' : (j.error || 'Lỗi');
+  });
+  document.getElementById('btn-upload').addEventListener('click', async ()=>{
+    const f = document.getElementById('file-avatar').files[0];
+    if(!f) return alert('Chọn file');
+    const fd = new FormData(); fd.append('avatar', f);
+    const r = await fetch('/user/upload_avatar', {method:'POST', headers:{'Authorization':'Bearer '+token}, body: fd});
+    const j = await r.json();
+    if(r.ok){ localStorage.setItem('taixiu_user', JSON.stringify(j.user)); loadProfile(); } else { alert(j.error || 'Upload failed'); }
+  });
+  loadProfile();
+</script>
+</body>
+</html>
