@@ -2,13 +2,13 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Tài Xỉu VIP — Casino Neon</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Taixiu VIP — Fullscreen</title>
 
-  <!-- Tailwind (CDN) -->
+  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Three.js (module for three-dice.js) -->
+  <!-- Three.js (global) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
 
   <!-- Socket.IO client -->
@@ -16,16 +16,19 @@
 
   <link rel="stylesheet" href="assets/style.css">
 </head>
-<body class="bg-black text-white">
-  <!-- Background image with blur + overlay -->
-  <div class="bg-wrap">
-    <div class="bg-overlay"></div>
-    <img src="assets/bg-casino.jpg" alt="bg" class="bg-img"/>
+<body class="bg-black overflow-hidden">
+
+  <!-- fullscreen background -->
+  <div class="bg-wrap fixed inset-0 -z-10">
+    <img class="bg-img w-full h-full object-cover" src="assets/bg-casino.jpg" alt="bg" />
+    <div class="bg-overlay absolute inset-0"></div>
   </div>
 
-  <div class="app-container">
-    <!-- Header -->
-    <header class="header neon-border">
+  <!-- app container full height -->
+  <div class="app-full h-screen w-screen flex flex-col">
+
+    <!-- header (overlay) -->
+    <header class="header absolute top-6 left-6 right-6 flex items-center justify-between py-3 px-4 neon-card backdrop-blur-md">
       <div class="flex items-center gap-4">
         <img id="header-avatar" src="assets/avatar-default.png" class="w-14 h-14 rounded-full ring-glow"/>
         <div>
@@ -40,7 +43,7 @@
           <div id="header-balance" class="text-xl font-extrabold neon-green">10,000</div>
         </div>
 
-        <div class="header-actions flex items-center gap-3">
+        <div class="flex items-center gap-3">
           <button class="icon-btn">⭐</button>
           <button class="icon-btn">✉️</button>
           <button class="icon-btn">⚙️</button>
@@ -48,103 +51,72 @@
       </div>
     </header>
 
-    <!-- Main content -->
-    <main class="main-grid">
-      <!-- Left: chat -->
-      <aside class="left-col neon-card">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="font-bold neon-text">Chat phòng</h3>
-          <div class="text-sm text-gray-300">Lobby</div>
-        </div>
-        <div id="chat-window" class="chat-window"></div>
-        <div class="mt-2 flex gap-2">
-          <input id="chat-input" class="input-neon flex-1" placeholder="Gõ chat..." />
-          <button id="chat-send" class="btn-neon">Gửi</button>
-        </div>
-      </aside>
+    <!-- center stage full -->
+    <main class="flex-1 grid grid-cols-12 gap-6 items-center justify-center px-8">
 
-      <!-- Center: Tài/Xỉu + Dice + Timer -->
-      <section class="center-col neon-card">
-        <div class="center-top flex items-center justify-between">
-          <!-- Tài -->
-          <div class="side-box text-center">
-            <div class="side-title tai-style">TÀI</div>
-            <div class="meta mt-2 text-sm text-gray-300">Người chơi: <span id="tai-count">0</span></div>
-            <div id="tai-total" class="mt-2 text-2xl font-bold neon-yellow">0</div>
-            <input id="bet-tai" type="number" placeholder="Số xu..." class="input-neon mt-3 w-full"/>
-          </div>
+      <!-- left column (Tai) -->
+      <section class="col-span-3 flex flex-col items-center justify-center neon-card p-6">
+        <div class="side-title tai-style text-5xl">TÀI</div>
+        <div class="mt-3 text-sm text-gray-300">Người chơi: <span id="tai-count">0</span></div>
+        <div id="tai-total" class="mt-3 text-3xl font-extrabold neon-yellow">0</div>
+        <input id="bet-tai" class="input-neon mt-4 w-full text-center" type="number" placeholder="Số xu..." />
+        <div class="mt-4 w-full"><button id="btn-bet-tai" class="btn-neon w-full">Đặt Tài</button></div>
+      </section>
 
-          <!-- Timer & Dice -->
-          <div class="center-game text-center">
-            <div id="timer-ring" class="timer-ring">
-              <div id="round-timer" class="timer-number">20</div>
+      <!-- center column (timer + dice) -->
+      <section class="col-span-6 flex flex-col items-center justify-center">
+        <div class="center-top flex flex-col items-center gap-6">
+          <!-- timer ring -->
+          <div id="timer-ring" class="timer-ring relative">
+            <svg id="timer-svg" viewBox="0 0 120 120" class="absolute inset-0 w-full h-full">
+              <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#4ee0ff"/><stop offset="1" stop-color="#ffd166"/></linearGradient></defs>
+              <circle cx="60" cy="60" r="50" stroke="rgba(255,255,255,0.06)" stroke-width="8" fill="none"></circle>
+              <circle id="timer-progress" cx="60" cy="60" r="50" stroke="url(#g1)" stroke-width="6" stroke-linecap="round" fill="none" stroke-dasharray="314" stroke-dashoffset="0" transform="rotate(-90 60 60)"></circle>
+            </svg>
+            <div class="timer-number-wrap absolute inset-0 flex flex-col items-center justify-center">
+              <div id="round-timer" class="timer-number text-6xl font-extrabold neon-yellow">20</div>
               <div class="text-xs text-gray-300">Giây</div>
             </div>
-
-            <div class="dice-stage mt-4">
-              <canvas id="dice-canvas" width="360" height="220"></canvas>
-            </div>
-
-            <div class="mt-3 flex gap-2 justify-center">
-              <button id="btn-bet-tai" class="btn-neon">Đặt Tài</button>
-              <button id="btn-bet-xiu" class="btn-neon">Đặt Xỉu</button>
-            </div>
           </div>
 
-          <!-- Xỉu -->
-          <div class="side-box text-center">
-            <div class="side-title xiu-style">XỈU</div>
-            <div class="meta mt-2 text-sm text-gray-300">Người chơi: <span id="xiu-count">0</span></div>
-            <div id="xiu-total" class="mt-2 text-2xl font-bold neon-yellow">0</div>
-            <input id="bet-xiu" type="number" placeholder="Số xu..." class="input-neon mt-3 w-full"/>
+          <!-- 3D dice canvas -->
+          <div class="dice-stage mt-2">
+            <canvas id="dice-canvas" width="520" height="300"></canvas>
           </div>
-        </div>
 
-        <!-- Recent rounds / history -->
-        <div class="mt-6 grid grid-cols-3 gap-3">
-          <div class="neon-border p-2">
-            <div class="font-semibold neon-text">Kết quả gần đây</div>
-            <div id="recent-rounds" class="mt-2 flex gap-2"></div>
+          <!-- result flash -->
+          <div id="result-flash" class="mt-3 hidden">
+            <div id="result-text" class="text-2xl font-extrabold neon-text"></div>
           </div>
-          <div class="neon-border p-2">
-            <div class="font-semibold neon-text">Lịch sử cược</div>
-            <div id="bet-history" class="mt-2 text-sm max-h-48 overflow-y-auto"></div>
-          </div>
-          <div class="neon-border p-2">
-            <div class="font-semibold neon-text">Top Xu</div>
-            <div id="leaderboard" class="mt-2 text-sm max-h-48 overflow-y-auto"></div>
+
+          <!-- quick controls small -->
+          <div class="mt-4 flex gap-3">
+            <button id="btn-auto-bet" class="btn-neon">Auto Bet</button>
+            <button id="btn-history" class="btn-neon">Lịch sử</button>
           </div>
         </div>
       </section>
 
-      <!-- Right: misc / controls -->
-      <aside class="right-col neon-card">
-        <div class="mb-4">
-          <h3 class="font-bold neon-text">Quick</h3>
-          <div class="mt-3 grid gap-2">
-            <button class="btn-neon">Trang cá nhân</button>
-            <button class="btn-neon">Nạp xu</button>
-            <button class="btn-neon">Đổi thưởng</button>
-          </div>
-        </div>
+      <!-- right column (Xiu) -->
+      <section class="col-span-3 flex flex-col items-center justify-center neon-card p-6">
+        <div class="side-title xiu-style text-5xl">XỈU</div>
+        <div class="mt-3 text-sm text-gray-300">Người chơi: <span id="xiu-count">0</span></div>
+        <div id="xiu-total" class="mt-3 text-3xl font-extrabold neon-yellow">0</div>
+        <input id="bet-xiu" class="input-neon mt-4 w-full text-center" type="number" placeholder="Số xu..." />
+        <div class="mt-4 w-full"><button id="btn-bet-xiu" class="btn-neon w-full">Đặt Xỉu</button></div>
+      </section>
 
-        <div class="mt-6">
-          <h3 class="font-bold neon-text">Luật chơi</h3>
-          <div class="text-sm text-gray-300 mt-2">Tài: tổng 11-17 — Xỉu: 4-10. Payout 1:1.</div>
-        </div>
-      </aside>
     </main>
 
-    <!-- Bottom menu (giữ nguyên) -->
-    <nav class="bottom-menu neon-border">
+    <!-- bottom floating menu -->
+    <nav class="bottom-menu fixed left-1/2 transform -translate-x-1/2 bottom-6 neon-card p-3 flex items-center gap-4">
       <button class="bottom-btn">Chat Admin</button>
       <button class="bottom-btn">Nạp Xu</button>
-      <button class="play-btn">Chơi ngay</button>
+      <button id="play-now" class="play-btn">Chơi ngay</button>
       <button class="bottom-btn">Đổi thưởng</button>
       <button class="bottom-btn">Luật chơi</button>
     </nav>
 
-    <footer class="text-center text-xs text-gray-400 p-4">© Taixiu VIP • Xu ảo 100% • Demo only</footer>
   </div>
 
   <script type="module" src="assets/socket.js"></script>
