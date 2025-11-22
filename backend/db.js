@@ -1,11 +1,35 @@
-const Database = require('better-sqlite3');
+const sqlite3 = require('sqlite3').verbose();
 const { DB_PATH } = require('./config');
 
-const db = new Database(DB_PATH);
+// Tạo kết nối
+const db = new sqlite3.Database(DB_PATH);
 
-// expose helper
-function run(sql, params=[]) { return db.prepare(sql).run(...params); }
-function all(sql, params=[]) { return db.prepare(sql).all(...params); }
-function get(sql, params=[]) { return db.prepare(sql).get(...params); }
+// Chuyển hàm chạy sang callback
+function run(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function (err) {
+      if (err) reject(err);
+      else resolve({ id: this.lastID, changes: this.changes });
+    });
+  });
+}
+
+function all(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+
+function get(sql, params = []) {
+  return new Promise((resolve, reject) => {
+      db.get(sql, params, (err, row) => {
+      if (err) reject(err);
+      else resolve(row);
+    });
+  });
+}
 
 module.exports = { db, run, all, get };
