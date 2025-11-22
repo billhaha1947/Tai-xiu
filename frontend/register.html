@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Đăng ký — Taixiu VIP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="bg-black text-white">
+  <div class="min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-md neon-card p-8">
+      <h1 class="text-3xl font-extrabold neon-text mb-4">Tạo tài khoản</h1>
+      <form id="register-form" class="space-y-4">
+        <input id="username" placeholder="Tên tài khoản" class="input-neon w-full"/>
+        <input id="password" placeholder="Mật khẩu" type="password" class="input-neon w-full"/>
+        <input id="password2" placeholder="Nhập lại mật khẩu" type="password" class="input-neon w-full"/>
+        <div class="flex justify-between items-center">
+          <button class="btn-neon" type="submit">Đăng ký</button>
+          <a href="login.html" class="text-sm text-gray-300">Đã có tài khoản?</a>
+        </div>
+      </form>
+      <div id="msg" class="mt-4 text-sm"></div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('register-form').addEventListener('submit', async e=>{
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const password2 = document.getElementById('password2').value;
+      if(password !== password2) { document.getElementById('msg').innerText='Mật khẩu không khớp'; return; }
+      const res = await fetch('/auth/register', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({username,password})
+      });
+      const data = await res.json();
+      if(res.ok){
+        localStorage.setItem('taixiu_token', data.token);
+        localStorage.setItem('taixiu_user', JSON.stringify(data.user));
+        window.location = '/';
+      } else {
+        document.getElementById('msg').innerText = data.error || 'Register failed';
+      }
+    });
+  </script>
+</body>
+</html>
