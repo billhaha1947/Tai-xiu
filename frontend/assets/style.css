@@ -1,0 +1,10 @@
+body { font-family: Inter, system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+.neon-text { color: #7ef9b6; text-shadow: 0 0 8px rgba(126,249,182,0.6); }
+.neon-green { color:#7ef9b6; }
+.neon-yellow { color:#ffd166; }
+.neon-card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.08)); border-radius: 12px; padding: 10px; }
+.input-neon { background: rgba(255,255,255,0.03); border: 1px solid rgba(126,249,182,0.06); padding: 8px; border-radius: 8px; color:#fff; }
+.btn-neon { background: linear-gradient(90deg,#0f172a,#05263b); padding: 8px 14px; border-radius: 10px; color:#fff; font-weight:600; border:1px solid rgba(126,249,182,0.12); }
+.ring-glow { box-shadow: 0 0 18px rgba(126,249,182,0.18); border:1px solid rgba(126,249,182,0.12); }
+.chat-window { background: rgba(0,0,0,0.35); height: 180px; overflow:auto; padding:8px; border-radius:8px; }
+.neon-border { border: 1px solid rgba(255,255,255,0.03); }
