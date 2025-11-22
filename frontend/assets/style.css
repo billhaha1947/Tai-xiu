@@ -1,67 +1,60 @@
-/* style.css — Neon VIP + Glass + Blur */
+/* Fullscreen Neon VIP styles (Tailwind used for layout, this file for custom) */
 
 :root{
-  --neon-blue: #4ee0ff;
-  --neon-gold: #ffd166;
-  --neon-green: #7ef9b6;
-  --glass: rgba(255,255,255,0.04);
-  --card-bg: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.18));
+  --neon-blue:#4ee0ff;
+  --neon-gold:#ffd166;
+  --neon-green:#7ef9b6;
+  --bg-dark: rgba(6,6,12,0.6);
 }
 
-html,body{ height:100%; margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; background:#000; color:#fff; }
+/* background */
+.bg-wrap{ position:fixed; inset:0; z-index:-10; overflow:hidden; }
+.bg-img{ width:100%; height:100%; object-fit:cover; filter: blur(22px) brightness(0.42) saturate(110%); transform: scale(1.06); }
+.bg-overlay{ position:absolute; inset:0; background: linear-gradient(180deg, rgba(10,8,22,0.3), rgba(6,4,22,0.6)); mix-blend-mode: overlay; }
 
-.bg-wrap{ position:fixed; inset:0; overflow:hidden; z-index:-2; }
-.bg-img{ width:100%; height:100%; object-fit:cover; filter: blur(18px) brightness(0.45) saturate(110%); transform:scale(1.06); }
-.bg-overlay{ position:absolute; inset:0; background: linear-gradient(180deg, rgba(4,6,22,0.35), rgba(6,4,22,0.6)); mix-blend-mode: overlay; }
+/* header */
+.header{ border-radius:12px; padding:10px 18px; backdrop-filter: blur(6px); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.12)); border:1px solid rgba(78,224,255,0.06); box-shadow: 0 12px 40px rgba(0,0,0,0.6); }
 
-/* App container */
-.app-container{ position:relative; max-width:1200px; margin:20px auto; padding:18px; }
+/* glow / neon */
+.ring-glow{ box-shadow: 0 0 22px rgba(78,224,255,0.16); border:1px solid rgba(78,224,255,0.08); }
+.neon-text{ color:var(--neon-blue); text-shadow: 0 0 14px rgba(78,224,255,0.12); }
+.neon-title{ color:#cfeef9; text-shadow: 0 0 12px rgba(78,224,255,0.10); }
+.neon-green{ color:var(--neon-green); text-shadow: 0 0 12px rgba(126,249,182,0.06); }
+.neon-yellow{ color:var(--neon-gold); text-shadow: 0 0 12px rgba(255,209,102,0.06); }
 
-/* Header */
-.header{ display:flex; justify-content:space-between; align-items:center; padding:10px 16px; border-radius:12px; background: var(--card-bg); backdrop-filter: blur(6px); border:1px solid rgba(126,249,182,0.06); box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
-.ring-glow{ box-shadow: 0 0 20px rgba(78,224,255,0.15); border:1px solid rgba(78,224,255,0.12); }
+/* cards and panels */
+.neon-card{ border-radius:14px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.12)); border:1px solid rgba(255,255,255,0.03); padding:12px; }
+.input-neon{ background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.03); padding:10px 12px; border-radius:10px; color:#fff; }
 
-/* Neon text */
-.neon-text{ color:var(--neon-blue); text-shadow: 0 0 8px rgba(78,224,255,0.12), 0 0 20px rgba(126,249,182,0.03); font-weight:700; }
-.neon-title{ color: #cfeef9; text-shadow: 0 0 12px rgba(78,224,255,0.12); }
-.neon-green{ color: var(--neon-green); text-shadow: 0 0 12px rgba(126,249,182,0.08); }
-.neon-yellow{ color: var(--neon-gold); text-shadow: 0 0 10px rgba(255,209,102,0.08); }
+/* side titles */
+.side-title{ -webkit-text-stroke: 0.6px rgba(255,255,255,0.02); }
 
-/* main layout */
-.main-grid{ display:grid; grid-template-columns: 280px 1fr 260px; gap:18px; margin-top:18px; align-items:start; }
-.left-col, .right-col, .center-col{ border-radius:12px; padding:12px; background: var(--card-bg); backdrop-filter: blur(6px); border:1px solid rgba(126,249,182,0.04); box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
+/* tai/xiu styles */
+.tai-style{ background: linear-gradient(90deg,#1dd3a6,#0fbcb0); -webkit-background-clip:text; color:transparent; text-shadow: 0 0 20px rgba(78,224,255,0.08); }
+.xiu-style{ background: linear-gradient(90deg,#ffd166,#ff7aa2); -webkit-background-clip:text; color:transparent; text-shadow: 0 0 20px rgba(255,209,102,0.08); }
 
-/* chat */
-.chat-window{ height:320px; overflow:auto; padding:8px; background: rgba(0,0,0,0.25); border-radius:8px; border:1px solid rgba(255,255,255,0.02); }
+/* timer ring */
+.timer-ring{ width:180px; height:180px; border-radius:999px; display:flex; align-items:center; justify-content:center; position:relative; }
+#timer-svg{ width:100%; height:100%; }
+.timer-number-wrap{ pointer-events:none; }
 
-/* inputs and buttons */
-.input-neon{ background: rgba(255,255,255,0.02); border:1px solid rgba(126,249,182,0.04); padding:8px 10px; border-radius:8px; color:#fff; }
-.btn-neon{ background: linear-gradient(90deg,#06202b,#042033); padding:8px 14px; border-radius:10px; color:#fff; font-weight:700; border:1px solid rgba(78,224,255,0.08); box-shadow: 0 8px 20px rgba(10,20,30,0.6); }
-.icon-btn{ background: rgba(255,255,255,0.02); border-radius:8px; padding:6px 8px; border:1px solid rgba(255,255,255,0.03); }
-
-/* center game */
-.center-top{ display:flex; align-items:center; justify-content:space-between; gap:18px; }
-.side-box{ width:260px; }
-.side-title{ font-size:36px; font-weight:900; padding:10px 14px; border-radius:10px; display:inline-block; }
-.tai-style{ background: linear-gradient(90deg,#0b3b2e,#093a2e); -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.06); text-shadow: 0 0 18px rgba(78,224,255,0.06); }
-.xiu-style{ background: linear-gradient(90deg,#23123b,#2a1650); -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.06); text-shadow: 0 0 18px rgba(255,209,102,0.06); }
-
-/* timer ring modern */
-.timer-ring{ width:140px; height:140px; border-radius:999px; display:flex; flex-direction:column; align-items:center; justify-content:center; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.02), rgba(0,0,0,0.4)); border: 2px solid rgba(78,224,255,0.08); box-shadow: 0 10px 40px rgba(78,224,255,0.02) inset; }
-.timer-number{ font-size:40px; font-weight:900; color:var(--neon-gold); text-shadow: 0 0 18px rgba(255,209,102,0.12); }
-
-/* dice stage */
-.dice-stage{ margin-top:6px; display:flex; justify-content:center; align-items:center; }
-
-/* recent rounds */
-#recent-rounds{ display:flex; gap:6px; flex-wrap:wrap; }
-.recent-dot{ width:22px; height:22px; border-radius:50%; display:inline-block; border:2px solid rgba(255,255,255,0.06); }
+/* dice canvas center */
+.dice-stage{ width: 520px; height: 300px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06)); display:flex; align-items:center; justify-content:center; box-shadow: 0 12px 40px rgba(0,0,0,0.6); }
 
 /* bottom menu */
-.bottom-menu{ position:fixed; left:50%; transform:translateX(-50%); bottom:18px; display:flex; gap:12px; align-items:center; padding:10px 16px; border-radius:999px; background: rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.03); }
-.bottom-btn{ padding:8px 12px; border-radius:8px; background: rgba(255,255,255,0.02); }
-.play-btn{ padding:12px 26px; border-radius:14px; background: linear-gradient(90deg,#0f5a2b,#1c7a3f); color:#fff; font-weight:900; }
+.bottom-menu{ border-radius:999px; backdrop-filter: blur(6px); }
 
-/* small helpers */
-.neon-card{ border-radius:12px; }
-.neon-border{ border: 1px solid rgba(255,255,255,0.03); padding:8px; border-radius:10px; }
+/* buttons */
+.btn-neon{ background: linear-gradient(90deg,#06202b,#042033); padding:10px 14px; border-radius:10px; font-weight:700; border:1px solid rgba(78,224,255,0.06); }
+.play-btn{ background: linear-gradient(90deg,#0f5a2b,#1c7a3f); padding:12px 22px; border-radius:14px; font-weight:900; }
+
+/* chat window */
+.chat-window{ height:340px; overflow:auto; padding:8px; border-radius:10px; background: rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.02); }
+
+/* responsive */
+@media (max-width: 1024px){
+  .main-grid{ grid-template-columns: 1fr; gap:12px; padding:18px; }
+  .col-span-3{ width:100%; }
+  .col-span-6{ width:100%; }
+  .dice-stage{ width:100%; height:220px; }
+}
