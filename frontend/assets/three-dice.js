@@ -1,10 +1,9 @@
 // three-dice.js (ES module)
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
+// This file uses the global THREE from CDN import in index.html (non-module).
+let scene, camera, renderer, cube, animId;
+const canvas = document.getElementById('dice-canvas');
 
-let scene, camera, renderer, cube, animReq;
-const canvasEl = document.getElementById('dice-canvas');
-
-function makeFaceTexture(num){
+function makeFace(num){
   const size = 256;
   const c = document.createElement('canvas');
   c.width = c.height = size;
@@ -12,87 +11,77 @@ function makeFaceTexture(num){
   // background
   ctx.fillStyle = '#111';
   ctx.fillRect(0,0,size,size);
-  // draw number big
+  // draw big number
   ctx.fillStyle = '#fff';
-  ctx.font = 'bold 120px sans-serif';
+  ctx.font = 'bold 140px Arial';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(String(num), size/2, size/2+10);
   return new THREE.CanvasTexture(c);
 }
 
-function setup(){
+function initThree(){
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(45, canvasEl.width / canvasEl.height, 0.1, 1000);
-  renderer = new THREE.WebGLRenderer({ canvas: canvasEl, alpha:true, antialias: true });
-  renderer.setSize(canvasEl.width, canvasEl.height);
-  camera.position.set(0,2.5,6);
+  camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 100);
+  renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer.setSize(canvas.width, canvas.height);
+  camera.position.set(0,2.2,6);
 
-  const light = new THREE.DirectionalLight(0xffffff, 1);
-  light.position.set(5,10,7);
-  scene.add(light);
-  scene.add(new THREE.AmbientLight(0x404040, 0.8));
+  const amb = new THREE.AmbientLight(0xffffff, 0.6);
+  scene.add(amb);
+  const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+  dir.position.set(5,10,7); scene.add(dir);
 
-  // cube geometry
-  const geometry = new THREE.BoxGeometry(2,2,2);
-  const materials = [
-    new THREE.MeshStandardMaterial({ map: makeFaceTexture(1) }),
-    new THREE.MeshStandardMaterial({ map: makeFaceTexture(6) }),
-    new THREE.MeshStandardMaterial({ map: makeFaceTexture(3) }),
-    new THREE.MeshStandardMaterial({ map: makeFaceTexture(4) }),
-    new THREE.MeshStandardMaterial({ map: makeFaceTexture(2) }),
-    new THREE.MeshStandardMaterial({ map: makeFaceTexture(5) }),
-  ];
-  cube = new THREE.Mesh(geometry, materials);
+  const geo = new THREE.BoxGeometry(2,2,2);
+  const mats = [1,6,3,4,2,5].map(n => new THREE.MeshStandardMaterial({ map: makeFace(n), metalness:0.4, roughness:0.6 }));
+  cube = new THREE.Mesh(geo, mats);
   scene.add(cube);
+
+  cube.rotation.set(-0.4, 0.7, 0.1);
 
   animate();
 }
 
-let rolling = false;
 function animate(){
-  animReq = requestAnimationFrame(animate);
-  if(!rolling){
-    cube.rotation.x += 0.005;
-    cube.rotation.y += 0.01;
-  }
+  animId = requestAnimationFrame(animate);
+  cube.rotation.x += 0.005;
+  cube.rotation.y += 0.007;
   renderer.render(scene, camera);
 }
 
-function rollToResult(diceArray){
-  // diceArray: [d1,d2,d3] -- we display the first die face on cube for simplicity as demo
-  // animate aggressive rotation then settle
-  rolling = true;
-  let t = 0;
-  const duration = 1000; // ms
-  const start = performance.now();
-  const startRx = cube.rotation.x;
-  const startRy = cube.rotation.y;
+function stopAnim(){
+  cancelAnimationFrame(animId);
+}
 
-  function step(now){
-    t = now - start;
-    // run fast spin
-    cube.rotation.x += 1.2;
-    cube.rotation.y += 1.6;
-    if(t < duration){
-      requestAnimationFrame(step);
-    } else {
-      // settle: map sum to face orientation — for demo set rotation to represent first dice
-      rolling = false;
-      // overlay final numbers on canvas: draw numbers
-      drawFinalNumbers(diceArray);
+function rollToResult(diceArr){
+  // Visual: fast spins 900ms then settle showing final faces mapped to diceArr values
+  let t0 = performance.now();
+  let spinDur = 900;
+  let spin = function(ts){
+    let t = ts - t0;
+    cube.rotation.x += 2.5;
+    cube.rotation.y += 3.1;
+    renderer.render(scene, camera);
+    if(t < spinDur) requestAnimationFrame(spin);
+    else {
+      // settle: set faces to dice values
+      const faces = [diceArr[0]||1, diceArr[1]||2, diceArr[2]||3, diceArr[0]||1, diceArr[1]||2, diceArr[2]||3];
+      faces.forEach((n,i)=>{ cube.material[i].map = makeFace(n); cube.material[i].map.needsUpdate = true; });
+      // a small bounce
+      let bounceT0 = performance.now();
+      let bounceDur = 500;
+      let bounce = (now)=>{
+        let tt = now - bounceT0;
+        let p = Math.sin((tt / bounceDur) * Math.PI) * 0.2;
+        cube.position.y = p;
+        renderer.render(scene, camera);
+        if(tt < bounceDur) requestAnimationFrame(bounce);
+        else cube.position.y = 0;
+      };
+      requestAnimationFrame(bounce);
     }
-  }
-  requestAnimationFrame(step);
+  };
+  requestAnimationFrame(spin);
 }
 
-function drawFinalNumbers(arr){
-  // simply show numbers on cube by updating textures
-  const faces = [arr[0], arr[1], arr[2], arr[0], arr[1], arr[2]];
-  faces.forEach((n,i)=>{
-    cube.material[i].map = makeFaceTexture(n);
-    cube.material[i].map.needsUpdate = true;
-  });
-}
-
-export { setup, rollToResult };
+export { initThree, rollToResult };
