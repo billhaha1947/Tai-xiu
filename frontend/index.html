@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Taixiu VIP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="bg-gradient-to-b from-black via-gray-900 to-black text-white">
+  <div class="max-w-6xl mx-auto p-4">
+    <!-- header bar -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <img id="header-avatar" src="assets/avatar-default.png" class="w-12 h-12 rounded-full ring-glow" />
+        <div>
+          <div id="header-username" class="font-bold neon-text">Khách</div>
+          <div class="text-sm text-gray-300">ID: <span id="header-id">-</span></div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-right">
+          <div class="text-xs text-gray-300">Balance</div>
+          <div id="header-balance" class="text-lg font-bold neon-green">10,000 xu</div>
+        </div>
+        <a href="login.html" class="btn-neon">Đăng nhập</a>
+        <a href="register.html" class="btn-neon">Đăng ký</a>
+      </div>
+    </div>
+
+    <!-- center panel like image -->
+    <div class="bg-blue-800/40 rounded-xl p-4 neon-card">
+      <div class="grid grid-cols-3 gap-4 items-center">
+        <!-- TAI -->
+        <div class="text-center">
+          <div class="text-3xl font-extrabold neon-text">TÀI</div>
+          <div class="mt-2 text-sm text-gray-200">Người chơi: <span id="tai-count">0</span></div>
+          <div class="mt-2 text-yellow-300 font-bold" id="tai-total">0</div>
+          <input id="bet-tai" type="number" class="input-neon mt-3 w-full" placeholder="Số xu..." />
+        </div>
+
+        <!-- center circle timer + dice -->
+        <div class="text-center">
+          <div class="mx-auto w-48 h-48 rounded-full bg-blue-900/60 flex items-center justify-center">
+            <div>
+              <div id="round-timer" class="text-5xl font-extrabold neon-yellow">20</div>
+              <div class="text-sm text-gray-300">Thời gian còn lại</div>
+            </div>
+          </div>
+          <div class="mt-4">
+            <canvas id="dice-canvas" width="300" height="180"></canvas>
+          </div>
+        </div>
+
+        <!-- XIU -->
+        <div class="text-center">
+          <div class="text-3xl font-extrabold neon-text">XỈU</div>
+          <div class="mt-2 text-sm text-gray-200">Người chơi: <span id="xiu-count">0</span></div>
+          <div class="mt-2 text-yellow-300 font-bold" id="xiu-total">0</div>
+          <input id="bet-xiu" type="number" class="input-neon mt-3 w-full" placeholder="Số xu..." />
+        </div>
+      </div>
+
+      <div class="mt-4 flex gap-3 justify-center">
+        <button id="btn-bet-tai" class="btn-neon">Đặt Tài</button>
+        <button id="btn-bet-xiu" class="btn-neon">Đặt Xỉu</button>
+      </div>
+
+      <div class="mt-6 grid grid-cols-3 gap-4">
+        <div>
+          <h3 class="font-bold neon-text">Chat phòng</h3>
+          <div id="chat-window" class="chat-window mt-2"></div>
+          <div class="mt-2 flex gap-2">
+            <input id="chat-input" class="input-neon flex-1" placeholder="Chat..."/>
+            <button id="chat-send" class="btn-neon">Gửi</button>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-bold neon-text">Lịch sử cược</h3>
+          <div id="bet-history" class="mt-2 max-h-64 overflow-y-auto neon-border p-2"></div>
+        </div>
+
+        <div>
+          <h3 class="font-bold neon-text">Top Xu</h3>
+          <div id="leaderboard" class="mt-2 neon-border p-2"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="assets/socket.js"></script>
+  <script type="module" src="assets/three-dice.js"></script>
+  <script type="module" src="assets/script.js"></script>
+</body>
+</html>
