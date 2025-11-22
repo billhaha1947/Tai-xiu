@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: taixiu-vip-backend
+    env: node
+    region: singapore
+    plan: free
+
+    buildCommand: |
+      cd backend
+      npm install
+      cd ../frontend
+      # nếu frontend chỉ là HTML/CSS/JS thuần thì bỏ qua bước build.
+      echo "Frontend static - không cần build."
+
+    startCommand: |
+      node backend/server.js
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: PORT
+        value: 10000
+
+      - key: JWT_SECRET
+        generateValue: true     # random tự động
+
+      - key: ADMIN_PASS
+        value: "admin123"
+
+      - key: WINRATE_DEFAULT
+        value: "50"             # mặc định 50%
+
+      - key: ENABLE_HOUSE_EDGE
+        value: "off"            # bật "on" mới kích hoạt thuật toán chống lỗ
+
+      - key: FRONTEND_PATH
+        value: "./frontend"     # backend serve file ở đây
+
+    disk:
+      name: sqlite-data
+      mountPath: /opt/render/project/src/backend/database
+      sizeGB: 1                 # đủ dùng cho 1-5k user
